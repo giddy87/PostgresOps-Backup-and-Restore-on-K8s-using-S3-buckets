@@ -1,0 +1,9 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: restore-config
+  namespace: default
+data:
+  date: 01-01-2021-01-01
+
+# Date string format: day-month-year-hour-minute

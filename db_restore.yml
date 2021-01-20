@@ -1,0 +1,73 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: restore-db
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: restore-db
+  template:
+    metadata:
+      labels:
+        app: restore-db
+    spec:
+      initContainers:
+      - name: transfer-s3
+        image: giddy87/giddy-repo:kops
+        command: ["/bin/sh", "-c"]
+        args:
+          - echo copy start;
+            aws s3 cp s3://<your bucket>/db-backup-$(DATE).bak /var/restore/;
+            echo done;
+        env:
+        - name: AWS_ACCESS_KEY_ID
+          valueFrom:
+            secretKeyRef:
+                name: aws
+                key: aws_access_key_id                                                                                                                                                                          
+        - name: AWS_DEFAULT_REGION
+          valueFrom:
+            secretKeyRef:
+                name: aws
+                key: aws_default_region
+        - name: AWS_SECRET_ACCESS_KEY
+          valueFrom:
+            secretKeyRef:
+                name: aws
+                key: aws_secret_access_key
+        - name: DATE
+          valueFrom:
+            configMapKeyRef:
+                name: restore-config
+                key: date
+        volumeMounts:                                                                                                                                                                                         
+        - mountPath: /var/restore                                                                                                                                                                                       
+          name: postgres-restore
+
+      containers:  
+      - name: restore-db
+        image: postgres:9.6-alpine
+        command: ["/bin/sh"]
+        args: ["-c", 'echo "$PGPASS" > /root/.pgpass && ls /var/restore && chmod 600 /root/.pgpass && psql -U <dbuser> -h <dbhost>  < /var/restore/db-backup-$(DATE).bak && echo done']
+        env:
+        - name: PGPASS
+          valueFrom:
+            secretKeyRef:
+              name: pgpass
+              key: pgpass
+        - name: DATE
+          valueFrom:
+            configMapKeyRef:
+                name: restore-config
+                key: date
+        volumeMounts:
+        - mountPath: /var/restore
+          name: postgres-restore
+
+
+      volumes:
+      - name: postgres-restore
+        hostPath:
+          path: /var/restore
+          type: DirectoryOrCreate         
