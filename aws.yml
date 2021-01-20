@@ -1,0 +1,9 @@
+apiVersion: v1
+kind: Secret
+metadata:
+  name: aws
+type: Opaque
+stringData:
+  aws_access_key_id: xxxxxxxx
+  aws_secret_access_key: xxxxxxx
+  aws_default_region: xxxxxx
