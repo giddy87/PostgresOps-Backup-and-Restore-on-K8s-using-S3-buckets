@@ -11,4 +11,5 @@ The pg_dumpall utility is used due to the possible presence of multiple database
 
 To setup backup; 
 1. Configure the db_backup.yml spec. and make the following changes:
-   Set the backup job interval (default is 1:00AM daily)
+   - Set the backup job schedule (default is 1:00AM daily)
+   -  Set the required values for dbhost, dbuser and s3 bucket
