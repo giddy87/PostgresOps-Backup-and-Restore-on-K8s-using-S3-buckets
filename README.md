@@ -16,7 +16,7 @@ To setup backup;
    - Set the required values for dbhost, dbuser and s3 bucket
 3. Configure the secret.yml with the required credentials 
 4. Kubectl create -f db_backup.yml
-# This initiates the daily backup cronjob
+This initiates the daily backup cronjob
 
 
 To Restore Database:
