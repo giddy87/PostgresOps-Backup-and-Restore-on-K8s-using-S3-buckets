@@ -54,7 +54,7 @@ spec:
       - name: restore-db
         image: postgres:9.6-alpine
         command: ["/bin/sh"]
-        args: ["-c", 'echo "$PGPASS" > /root/.pgpass && ls /var/restore && chmod 600 /root/.pgpass && psql -U <dbuser> -h <dbhost>  < /var/restore/$(BACKUP).sql && echo done']
+        args: ["-c", 'echo "$PGPASS" > /root/.pgpass && ls /var/restore && chmod 600 /root/.pgpass && psql -U <dbuser> -h <dbhost>  < /var/restore/$(BACKUP).sql && echo done && sleep 100m']
         env:
         - name: PGPASS
           valueFrom:
