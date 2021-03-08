@@ -4,8 +4,8 @@ metadata:
   name: restore-config
   namespace: default
 data:
-  date: 01-04-2021-09-48
-  s3_bucket: claritae-backup
-  backup: <backup-name>
-  db_user: <db_user>
-  db_host: <db_host>
+  s3_bucket: <bucket name>
+  backup: <backup name>
+  db_user: <db username>
+  db_host: <db hostname>
+

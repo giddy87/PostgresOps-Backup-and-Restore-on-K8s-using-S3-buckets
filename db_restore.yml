@@ -18,7 +18,7 @@ spec:
         command: ["/bin/sh", "-c"]
         args:
           - echo copy start;
-            aws s3 cp s3://<your bucket>/db-backup-$(DATE).bak /var/restore/;
+            aws s3 cp s3://$(S3_BUCKET)/$(BACKUP).sql /var/restore/;
             echo done;
         env:
         - name: AWS_ACCESS_KEY_ID
@@ -36,11 +36,16 @@ spec:
             secretKeyRef:
                 name: aws
                 key: aws_secret_access_key
-        - name: DATE
+        - name: S3_BUCKET
           valueFrom:
             configMapKeyRef:
                 name: restore-config
                 key: date
+        - name: BACKUP
+          valueFrom:
+            configMapKeyRef:
+                name: restore-config
+                key: backup
         volumeMounts:                                                                                                                                                                                         
         - mountPath: /var/restore                                                                                                                                                                                       
           name: postgres-restore
@@ -49,18 +54,34 @@ spec:
       - name: restore-db
         image: postgres:9.6-alpine
         command: ["/bin/sh"]
-        args: ["-c", 'echo "$PGPASS" > /root/.pgpass && ls /var/restore && chmod 600 /root/.pgpass && psql -U <dbuser> -h <dbhost>  < /var/restore/db-backup-$(DATE).bak && echo done']
+        args: ["-c", 'echo "$PGPASS" > /root/.pgpass && ls /var/restore && chmod 600 /root/.pgpass && psql -U <dbuser> -h <dbhost>  < /var/restore/$(BACKUP).sql && echo done']
         env:
         - name: PGPASS
           valueFrom:
             secretKeyRef:
               name: pgpass
               key: pgpass
-        - name: DATE
+        - name: S3_BUCKET
+          valueFrom:                                                                                                             
+            configMapKeyRef:
+                name: restore-config
+                key: s3_bucket                                                                                               
+        - name: BACKUP                                                                                                         
+          valueFrom:                                                                                                             
+            configMapKeyRef:                                                                                                    
+                name: restore-config                                                                                                   
+                key: backup                                                                                                   
+        - name: DB_HOST
           valueFrom:
             configMapKeyRef:
                 name: restore-config
-                key: date
+                key: db_host
+        - name: DB_USER
+          valueFrom:                                                                                                           
+            configMapKeyRef:
+                name: restore-config
+                key: db_user
+
         volumeMounts:
         - mountPath: /var/restore
           name: postgres-restore
