@@ -13,7 +13,7 @@ spec:
           - name: db-backup
             image: postgres:9.6
             command: ["/bin/sh"]
-            args: ["-c", 'echo "$PGPASS" > /root/.pgpass && chmod 600 /root/.pgpass && pg_dumpall -U <dbuser> -h <dbhost>  > /var/backups/db-backup-$(date +"%d-%m-%Y-%H-%M").bak && echo done']
+            args: ["-c", 'echo "$PGPASS" > /root/.pgpass && chmod 600 /root/.pgpass && pg_dumpall -U <dbuser> -h <dbhost>  > /var/backups/db-backup-$(date +"%d-%m-%Y-%H-%M").sql && echo done']
             env:
             - name: PGPASS
               valueFrom:
